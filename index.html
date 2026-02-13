@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Installing Feelings...</title>
+<style>
+body {
+    font-family: system-ui, sans-serif;
+    background: linear-gradient(120deg,#e9edf3,#f7f9fc);
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+.window {
+    background: white;
+    width: 400px;
+    padding: 24px;
+    border-radius: 18px;
+    box-shadow: 0 30px 50px rgba(0,0,0,0.25);
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+.small-window {
+    background: white;
+    width: 260px;
+    padding: 14px;
+    border-radius: 14px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    position: fixed;
+    top: 15%;
+    left: 10%;
+    text-align: center;
+    font-size: 13px;
+    cursor: move;
+    z-index: 5;
+}
+.small-window img {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 8px;
+}
+h3 { margin: 0 0 8px; }
+.status {
+    font-size: 14px;
+    color: #555;
+    min-height: 20px;
+}
+.progress {
+    background: #eee;
+    border-radius: 10px;
+    height: 10px;
+    overflow: hidden;
+    margin: 14px 0;
+}
+.bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg,#ff9aaa,#ffd6e0);
+    transition: width 0.5s;
+}
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background: #ffd6e0;
+    cursor: pointer;
+    margin-top: 12px;
+}
+button:hover { background:#ffb3c7; }
+.hidden { display:none; }
+#runaway { position:absolute; }
+.popup {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 16px;
+    border-radius: 14px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    font-size: 14px;
+    z-index: 10;
+}
+</style>
+</head>
+
+<body>
+
+<div class="window" id="box">
+    <h3>Installing Feelings v21.0</h3>
+    <div class="status" id="status">กำลังเตรียมระบบ…</div>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <button id="startBtn" onclick="start()">เริ่มติดตั้ง</button>
+</div>
+
+<script>
+let percent = 0;
+let tries = 0;
+const bar = document.getElementById("bar");
+const status = document.getElementById("status");
+const box = document.getElementById("box");
+const startBtn = document.getElementById("startBtn");
+
+function start(){
+    startBtn.classList.add("hidden");
+    fakeInstall();
+    spawnImageWindow();
+}
+
+function fakeInstall(){
+    const texts = [
+        "กำลังโหลดความรู้สึก…",
+        "ตรวจสอบความตั้งใจ…",
+        "คำนวณระยะเวลา…",
+        "ระบบเริ่มคิดมาก…"
+    ];
+    let i = 0;
+
+    const interval = setInterval(()=>{
+        percent += Math.random()*15;
+        status.innerText = texts[i++ % texts.length];
+
+        if(percent >= 97){
+            percent = 97;
+            clearInterval(interval);
+            stuck();
+        }
+        bar.style.width = percent + "%";
+    },600);
+}
+
+function stuck(){
+    status.innerText = "ติดอยู่ที่ 97%";
+    setTimeout(()=>{
+        status.innerText = "ระบบลังเลนิดหน่อย";
+        spawnRunaway();
+    },1200);
+}
+
+function spawnRunaway(){
+    const btn = document.createElement("button");
+    btn.id = "runaway";
+    btn.innerText = "ช่วยระบบหน่อย";
+    box.appendChild(btn);
+
+    btn.onmouseover = ()=>{
+        tries++;
+        btn.style.left = Math.random()*260 + "px";
+        btn.style.top = Math.random()*160 + "px";
+    };
+
+    btn.onclick = ()=>{
+        box.removeChild(btn);
+        errorPopup();
+    };
+}
+
+function errorPopup(){
+    const pop = document.createElement("div");
+    pop.className = "popup";
+    pop.innerHTML = `
+        ⚠️ ERROR 21DAYS<br>
+        ระบบตรวจพบความพยายาม ${tries} ครั้ง<br><br>
+        <button onclick="continueInstall()">รับทราบ</button>
+    `;
+    document.body.appendChild(pop);
+}
+
+function continueInstall(){
+    document.querySelector(".popup").remove();
+    status.innerText = "โอเคค ไปต่อก็ได้ 😅";
+
+    const interval = setInterval(()=>{
+        percent += Math.random()*6;
+
+        if(percent >= 100){
+            percent = 100;
+            clearInterval(interval);
+            finish();
+        }
+        bar.style.width = percent + "%";
+    },500);
+}
+
+function finish(){
+    setTimeout(()=>{
+        box.innerHTML = `
+            <h3>ติดตั้งเสร็จแล้ว</h3>
+            <p>ตั้งเริ่มรู้จักกันมา</p>
+            <p>ก็ทำให้พี่รู้สึกได้หลายๆอย่าง</p>
+            <p>ไว้รอวันที่พร้อมนะครับ</p>
+             <p>ดอกกุหลาบ 1 ดอก นี้ พี่อยากให้เป็นจุดเริ่มต้นนะ</p>
+            <p style="margin-top:14px;">Happy Valentine’s Day 💌kub</p>
+            <button onclick="secret()">...</button>
+        `;
+    },900);
+}
+
+function secret(){
+    box.innerHTML = `
+        <h3>Secret Ending 🎁</h3>
+        <p>รถเมย์</p>
+        <p>ยิ้มให้พี่เยอะๆนะ</p>
+        <p>เข้าใจม้ายย</p>
+        <p style="margin-top:12px;">😊</p>
+    `;
+}
+
+/* หน้าต่างรูปภาพ */
+function spawnImageWindow(){
+    const win = document.createElement("div");
+    win.className = "small-window";
+    win.innerHTML = `
+        <b>Background Process</b><br>
+        กำลังแอบคิดถึง...<br>
+        <img src="TJ.jpg">
+        <button onclick="this.parentElement.remove()">ปิดได้ (มั้ง)</button>
+    `;
+    document.body.appendChild(win);
+}
+</script>
+
+</body>
+</html>
